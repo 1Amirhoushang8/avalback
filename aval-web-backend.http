@@ -1,0 +1,6 @@
+@aval_web_backend_HostAddress = http://localhost:5188
+
+GET {{aval_web_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
