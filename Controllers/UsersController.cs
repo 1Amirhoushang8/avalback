@@ -1,105 +1,71 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AvalBackend.Services;
-using AvalBackend.Models;
-using System.Linq;
+using AvalWebBack.Services;
+using AvalWebBack.Models;
 
-namespace AvalBackend.Controllers;
+namespace AvalWebBack.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly JsonDataService _dataService;
+    private readonly IUserService _userService;
+    private readonly ILogger<UsersController> _logger;
 
-    public UsersController(JsonDataService dataService)
+    public UsersController(IUserService userService, ILogger<UsersController> logger)
     {
-        _dataService = dataService;
+        _userService = userService;
+        _logger = logger;
     }
 
-    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var db = await _dataService.ReadAsync();
-        
-        return Ok(db.Users);
+        var (success, data, error) = await _userService.GetAllUsersAsync();
+        if (!success)
+            return BadRequest(ApiResponse<object>.ErrorResponse(error!));
+        return Ok(ApiResponse<IEnumerable<User>>.SuccessResponse(data!));
     }
 
-    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
     {
-        var db = await _dataService.ReadAsync();
-        var user = db.Users.FirstOrDefault(u => u.Id == id);
-        if (user == null)
-            return NotFound(new { message = "کاربر یافت نشد" });
-
-        return Ok(user);
+        var (success, data, error) = await _userService.GetUserByIdAsync(id);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
+        return Ok(ApiResponse<User>.SuccessResponse(data!));
     }
 
-    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] User newUser)
     {
-        var db = await _dataService.ReadAsync();
+        var (success, data, error) = await _userService.CreateUserAsync(newUser);
+        if (!success)
+            return BadRequest(ApiResponse<object>.ErrorResponse(error!));
 
-        
-        if (string.IsNullOrEmpty(newUser.Id))
-            newUser.Id = Guid.NewGuid().ToString().Substring(0, 8);
-
-       
-        if (db.Users.Any(u => u.SerialNumber == newUser.SerialNumber))
-            return BadRequest(new { message = "شماره فاکتور تکراری است" });
-
-        db.Users.Add(newUser);
-        await _dataService.WriteAsync(db);
-
-        return CreatedAtAction(nameof(GetById), new { id = newUser.Id }, newUser);
+        _logger.LogInformation("User {UserId} created", data!.Id);
+        return CreatedAtAction(nameof(GetById), new { id = data.Id },
+            ApiResponse<User>.SuccessResponse(data, "کاربر با موفقیت ایجاد شد"));
     }
-
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] User updatedUser)
     {
-        var db = await _dataService.ReadAsync();
-        var user = db.Users.FirstOrDefault(u => u.Id == id);
-        if (user == null)
-            return NotFound(new { message = "کاربر یافت نشد" });
+        var (success, data, error) = await _userService.UpdateUserAsync(id, updatedUser);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
 
-       
-        if (!string.IsNullOrEmpty(updatedUser.SerialNumber) &&
-            db.Users.Any(u => u.SerialNumber == updatedUser.SerialNumber && u.Id != id))
-        {
-            return BadRequest(new { message = "شماره فاکتور تکراری است" });
-        }
-
-        
-        user.FullName = updatedUser.FullName ?? user.FullName;
-        user.PhoneNumber = updatedUser.PhoneNumber ?? user.PhoneNumber;
-        user.SerialNumber = updatedUser.SerialNumber ?? user.SerialNumber;
-        user.Service = updatedUser.Service ?? user.Service;
-        user.Price = updatedUser.Price ?? user.Price;
-        user.Status = updatedUser.Status ?? user.Status;
-        user.PaymentType = updatedUser.PaymentType ?? user.PaymentType;
-        user.MonthlyPayment = updatedUser.MonthlyPayment ?? user.MonthlyPayment;
-        user.TotalMonths = updatedUser.TotalMonths ?? user.TotalMonths;
-
-        await _dataService.WriteAsync(db);
-        return Ok(user);
+        _logger.LogInformation("User {UserId} updated", id);
+        return Ok(ApiResponse<User>.SuccessResponse(data!, "کاربر با موفقیت به‌روزرسانی شد"));
     }
 
-    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        var db = await _dataService.ReadAsync();
-        var user = db.Users.FirstOrDefault(u => u.Id == id);
-        if (user == null)
-            return NotFound(new { message = "کاربر یافت نشد" });
+        var (success, error) = await _userService.DeleteUserAsync(id);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
 
-        db.Users.Remove(user);
-        await _dataService.WriteAsync(db);
-
-        return NoContent();
+        _logger.LogInformation("User {UserId} deleted", id);
+        return Ok(ApiResponse<object>.SuccessResponse(new { id }, "کاربر با موفقیت حذف شد"));
     }
 }

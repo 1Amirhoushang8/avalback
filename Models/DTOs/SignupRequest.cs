@@ -10,7 +10,7 @@ public class SignupRequest
     public string FullName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "نام کاربری الزامی است")]
-    [RegularExpression(@"^[A-Za-z0-9_]+$", ErrorMessage = "فقط حروف انگلیسی، اعداد و زیرخط")]
+    [RegularExpression(@"^[A-Za-z0-9_]+$", ErrorMessage = "فقط حروف انگلیسی، اعداد و زیرخط مجاز است")]
     public string Username { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "رمز عبور الزامی است")]

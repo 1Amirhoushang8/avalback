@@ -1,26 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AvalBackend.Services;
-using AvalBackend.Models;
-using System.Linq;
+using AvalWebBack.Services;
+using AvalWebBack.Models;
 using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace AvalBackend.Controllers;
+namespace AvalWebBack.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class TicketsController : ControllerBase
 {
-    private readonly JsonDataService _dataService;
+    private readonly ITicketService _ticketService;
+    private readonly ILogger<TicketsController> _logger;
 
-    public TicketsController(JsonDataService dataService)
+    public TicketsController(ITicketService ticketService, ILogger<TicketsController> logger)
     {
-        _dataService = dataService;
+        _ticketService = ticketService;
+        _logger = logger;
     }
 
-    
+    // ========== DEBUG ENDPOINTS (unchanged) ==========
     [HttpGet("debug")]
     public IActionResult Debug()
     {
@@ -44,7 +45,7 @@ public class TicketsController : ControllerBase
             try
             {
                 var json = System.IO.File.ReadAllText(filePath1);
-                results.Add($"First 200 chars: {json.Substring(0, Math.Min(200, json.Length))}");
+                results.Add($"First 200 chars: {json[..Math.Min(200, json.Length)]}");
             }
             catch (Exception ex)
             {
@@ -90,7 +91,7 @@ public class TicketsController : ControllerBase
 
             return Ok(new
             {
-                filePath = filePath,
+                filePath,
                 adminsCount = db?.Admins?.Count ?? 0,
                 usersCount = db?.Users?.Count ?? 0,
                 ticketsCount = db?.Tickets?.Count ?? 0,
@@ -104,128 +105,67 @@ public class TicketsController : ControllerBase
         }
     }
 
-    // GET: api/tickets
+    // ========== BUSINESS ENDPOINTS (with ApiResponse<T> wrapper) ==========
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] string? userId)
     {
-        var db = await _dataService.ReadAsync();
-        var tickets = db.Tickets.AsEnumerable();
-
-        if (!string.IsNullOrEmpty(userId))
-            tickets = tickets.Where(t => t.UserId == userId);
-
-        return Ok(tickets);
+        var (success, data, error) = await _ticketService.GetAllTicketsAsync(userId);
+        if (!success)
+            return BadRequest(ApiResponse<object>.ErrorResponse(error!));
+        return Ok(ApiResponse<IEnumerable<Ticket>>.SuccessResponse(data!));
     }
 
-    // GET: api/tickets/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
     {
-        var db = await _dataService.ReadAsync();
-        var ticket = db.Tickets.FirstOrDefault(t => t.Id == id);
-
-        if (ticket == null)
-            return NotFound(new { message = "تیکت یافت نشد" });
-
-        return Ok(ticket);
+        var (success, data, error) = await _ticketService.GetTicketByIdAsync(id);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
+        return Ok(ApiResponse<Ticket>.SuccessResponse(data!));
     }
 
-    // POST: api/tickets
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Ticket newTicket)
     {
-        var db = await _dataService.ReadAsync();
+        var (success, data, error) = await _ticketService.CreateTicketAsync(newTicket);
+        if (!success)
+            return BadRequest(ApiResponse<object>.ErrorResponse(error!));
 
-        if (!db.Users.Any(u => u.Id == newTicket.UserId))
-            return BadRequest(new { message = "کاربر نامعتبر است" });
-
-        newTicket.Id = Guid.NewGuid().ToString().Substring(0, 8);
-        newTicket.Status = "pending";
-        
-
-        db.Tickets.Add(newTicket);
-        await _dataService.WriteAsync(db);
-
-        return CreatedAtAction(nameof(GetById), new { id = newTicket.Id }, newTicket);
+        _logger.LogInformation("Ticket {TicketId} created by user {UserId}", data!.Id, newTicket.UserId);
+        return CreatedAtAction(nameof(GetById), new { id = data.Id },
+            ApiResponse<Ticket>.SuccessResponse(data, "تیکت با موفقیت ایجاد شد"));
     }
 
-    // PUT: api/tickets/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] Ticket updatedTicket)
     {
-        var db = await _dataService.ReadAsync();
-        var ticket = db.Tickets.FirstOrDefault(t => t.Id == id);
+        var (success, data, error) = await _ticketService.UpdateTicketAsync(id, updatedTicket);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
 
-        if (ticket == null)
-            return NotFound(new { message = "تیکت یافت نشد" });
-
-        ticket.Title = updatedTicket.Title;
-        ticket.ShortDetail = updatedTicket.ShortDetail;
-        ticket.Description = updatedTicket.Description;
-        ticket.Status = updatedTicket.Status;
-        ticket.AdminResponse = updatedTicket.AdminResponse;
-        
-
-        await _dataService.WriteAsync(db);
-        return Ok(ticket);
+        _logger.LogInformation("Ticket {TicketId} updated", id);
+        return Ok(ApiResponse<Ticket>.SuccessResponse(data!, "تیکت با موفقیت به‌روزرسانی شد"));
     }
 
-    // DELETE: api/tickets/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        var db = await _dataService.ReadAsync();
-        var ticket = db.Tickets.FirstOrDefault(t => t.Id == id);
+        var (success, error) = await _ticketService.DeleteTicketAsync(id);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
 
-        if (ticket == null)
-            return NotFound(new { message = "تیکت یافت نشد" });
-
-        db.Tickets.Remove(ticket);
-        await _dataService.WriteAsync(db);
-
-        return NoContent();
+        _logger.LogInformation("Ticket {TicketId} deleted", id);
+        return Ok(ApiResponse<object>.SuccessResponse(new { id }, "تیکت با موفقیت حذف شد"));
     }
 
-    // GET: api/tickets/{id}/file – Download attached file
     [HttpGet("{id}/file")]
     public async Task<IActionResult> DownloadFile(string id)
     {
-        var db = await _dataService.ReadAsync();
-        var ticket = db.Tickets.FirstOrDefault(t => t.Id == id);
+        var (success, fileBytes, contentType, fileName, error) = await _ticketService.GetTicketFileAsync(id);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse(error!));
 
-        if (ticket?.File == null)
-            return NotFound(new { message = "فایلی برای این تیکت موجود نیست" });
-
-        try
-        {
-            
-            var fileElement = (JsonElement)ticket.File;
-            if (fileElement.ValueKind == JsonValueKind.Object &&
-                fileElement.TryGetProperty("data", out var dataElement) &&
-                fileElement.TryGetProperty("name", out var nameElement) &&
-                fileElement.TryGetProperty("type", out var typeElement))
-            {
-                var base64WithPrefix = dataElement.GetString();
-                var fileName = nameElement.GetString();
-                var contentType = typeElement.GetString();
-
-                if (string.IsNullOrEmpty(base64WithPrefix))
-                    return BadRequest(new { message = "داده فایل خالی است" });
-
-                
-                var base64Data = base64WithPrefix.Contains(',')
-                    ? base64WithPrefix.Substring(base64WithPrefix.IndexOf(',') + 1)
-                    : base64WithPrefix;
-
-                var fileBytes = Convert.FromBase64String(base64Data);
-                return File(fileBytes, contentType ?? "application/octet-stream", fileName ?? "download");
-            }
-
-            return BadRequest(new { message = "ساختار فایل نامعتبر است" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "خطا در پردازش فایل", error = ex.Message });
-        }
+        
+        return File(fileBytes!, contentType ?? "application/octet-stream", fileName ?? "download");
     }
 }
