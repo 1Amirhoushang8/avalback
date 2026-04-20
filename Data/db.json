@@ -173,36 +173,6 @@
       "MonthlyPayment": "\u06F1\u06F6,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
       "TotalMonths": 5,
       "Status": "\u062F\u0631\u062D\u0627\u0644-\u0627\u0646\u062C\u0627\u0645"
-    },
-    {
-      "Id": "54a1fbcc",
-      "Username": "amirhoushang",
-      "Password": "amir123",
-      "FullName": "\u0627\u0645\u06CC\u0631\u0645\u0647\u062F\u06CC \u0647\u0648\u0634\u06CC\u0627\u0631\u06CC",
-      "RoleKey": "USER",
-      "SerialNumber": "22915101",
-      "PhoneNumber": "0912345678",
-      "Price": "\u06F0 \u062A\u0648\u0645\u0627\u0646",
-      "Service": "\u0627\u0646\u062A\u062E\u0627\u0628 \u0646\u0634\u062F\u0647",
-      "PaymentType": "\u067E\u0631\u062F\u0627\u062E\u062A-\u062A\u06A9\u06CC",
-      "MonthlyPayment": null,
-      "TotalMonths": null,
-      "Status": "\u062F\u0631\u062D\u0627\u0644-\u0627\u0646\u062C\u0627\u0645"
-    },
-    {
-      "Id": "be33e34e",
-      "Username": "\u0627\u0645\u06CC\u0631\u0645\u0647\u062F\u06CC \u0647\u0648\u0634\u06CC\u0627\u0631\u06CC",
-      "Password": null,
-      "FullName": "\u0627\u0645\u06CC\u0631\u0645\u0647\u062F\u06CC \u0647\u0648\u0634\u06CC\u0627\u0631\u06CC",
-      "RoleKey": null,
-      "SerialNumber": "\u06F1\u06F2\u06F3\u06F1\u06F2\u06F3\u06F1\u06F2\u06F3\u06F4\u06F3",
-      "PhoneNumber": "0912345678",
-      "Price": "\u06F7\u06F0,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
-      "Service": "\u0637\u0631\u0627\u062D\u06CC \u0648\u0628 \u0633\u0627\u06CC\u062A",
-      "PaymentType": "\u067E\u0631\u062F\u0627\u062E\u062A-\u062F\u0648\u0631\u0647-\u0627\u06CC",
-      "MonthlyPayment": "\u06F7,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
-      "TotalMonths": 10,
-      "Status": "\u067E\u0631\u062F\u0627\u062E\u062A-\u0634\u062F\u0647"
     }
   ],
   "Tickets": [
