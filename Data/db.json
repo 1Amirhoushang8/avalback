@@ -307,8 +307,8 @@
       "Description": "\u062A\u0633\u062A\u06CC",
       "Date": "\u06F1\u06F4\u06F0\u06F5/\u06F0\u06F1/\u06F3\u06F0",
       "Time": "\u06F1\u06F1:\u06F2\u06F3",
-      "Status": "pending",
-      "AdminResponse": null,
+      "Status": "in-progress",
+      "AdminResponse": "hello",
       "File": {
         "name": "V2RayN.zip",
         "type": "application/zip",
@@ -568,6 +568,24 @@
       "SenderType": "admin",
       "Text": "\u062E\u06CC\u0641",
       "Timestamp": "\u06F1\u06F4\u06F0\u06F5/\u06F1/\u06F2\u06F9 12:32",
+      "IsRead": false
+    },
+    {
+      "Id": "9e204af1",
+      "TicketId": "d9e3330b",
+      "SenderId": "3962",
+      "SenderType": "admin",
+      "Text": "hello",
+      "Timestamp": "2026/04/19 14:58",
+      "IsRead": false
+    },
+    {
+      "Id": "cf946f01",
+      "TicketId": "d9e3330b",
+      "SenderId": "13",
+      "SenderType": "user",
+      "Text": "hi there",
+      "Timestamp": "2026/04/19 14:58",
       "IsRead": false
     }
   ],
