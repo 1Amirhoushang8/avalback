@@ -17,7 +17,7 @@
       "RoleKey": "USER",
       "SerialNumber": "\u06F1\u06F9\u06F2\u06F0\u06F4\u06F8\u06F3\u06F8",
       "PhoneNumber": "09121112233",
-      "Price": "\u06F4\u06F5,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
+      "Price": "\u06F6\u06F0,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
       "Service": "\u0627\u067E\u0644\u06CC\u06A9\u06CC\u0634\u0646 \u0645\u0648\u0628\u0627\u06CC\u0644",
       "PaymentType": "\u067E\u0631\u062F\u0627\u062E\u062A-\u062A\u06A9\u06CC",
       "MonthlyPayment": null,
@@ -157,21 +157,6 @@
       "PaymentType": "\u067E\u0631\u062F\u0627\u062E\u062A-\u062A\u06A9\u06CC",
       "MonthlyPayment": null,
       "TotalMonths": null,
-      "Status": "\u062F\u0631\u062D\u0627\u0644-\u0627\u0646\u062C\u0627\u0645"
-    },
-    {
-      "Id": "0ea6e66f",
-      "Username": "\u0633\u0627\u0631\u0627 \u0646\u0648\u0631\u0648\u0632\u06CC",
-      "Password": null,
-      "FullName": "\u0633\u0627\u0631\u0627 \u0646\u0648\u0631\u0648\u0632\u06CC",
-      "RoleKey": null,
-      "SerialNumber": "\u06F9\u06F8\u06F1\u06F2\u06F7\u06F6\u06F3\u06F4",
-      "PhoneNumber": "09121112233",
-      "Price": "\u06F8\u06F0,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
-      "Service": "\u0637\u0631\u0627\u062D\u06CC \u06AF\u0631\u0627\u0641\u06CC\u06A9",
-      "PaymentType": "\u067E\u0631\u062F\u0627\u062E\u062A-\u062F\u0648\u0631\u0647-\u0627\u06CC",
-      "MonthlyPayment": "\u06F1\u06F6,\u06F0\u06F0\u06F0,\u06F0\u06F0\u06F0 \u062A\u0648\u0645\u0627\u0646",
-      "TotalMonths": 5,
       "Status": "\u062F\u0631\u062D\u0627\u0644-\u0627\u0646\u062C\u0627\u0645"
     }
   ],

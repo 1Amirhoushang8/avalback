@@ -1,4 +1,5 @@
-﻿using AvalWebBack.Models;
+﻿using System.Linq;
+using AvalWebBack.Models;
 using AvalWebBack.Models.DTOs;
 
 namespace AvalWebBack.Services;
@@ -19,7 +20,7 @@ public class AuthService : IAuthService
         // Check admins
         var admin = db.Admins.FirstOrDefault(a =>
             a.Username.Equals(username, StringComparison.OrdinalIgnoreCase) &&
-            a.Password == password); // Note: In a real app, compare hashed passwords
+            a.Password == password);
 
         if (admin != null)
         {
@@ -54,18 +55,16 @@ public class AuthService : IAuthService
             return (true, new { user = userData, token }, null);
         }
 
-        return (false, null, "نام کاربری یا رمز عبور اشتباه است");
+        return (false, null!, "نام کاربری یا رمز عبور اشتباه است");
     }
 
     public async Task<(bool success, string? userId, string? error)> RegisterAsync(SignupRequest request)
     {
         var db = await _dataService.ReadAsync();
 
-        // Username uniqueness
         if (db.Users.Any(u => u.Username.Equals(request.Username, StringComparison.OrdinalIgnoreCase)))
             return (false, null, "این نام کاربری قبلاً انتخاب شده است");
 
-        // Optional: Check password reuse (your original logic)
         if (db.Users.Any(u => u.Password == request.Password))
             return (false, null, "این رمز عبور قبلاً استفاده شده است");
 
@@ -73,7 +72,7 @@ public class AuthService : IAuthService
         {
             Id = Guid.NewGuid().ToString().Substring(0, 8),
             Username = request.Username,
-            Password = request.Password, // Note: Hash this in production
+            Password = request.Password,
             FullName = request.FullName,
             PhoneNumber = request.PhoneNumber,
             SerialNumber = new Random().Next(10000000, 99999999).ToString(),
@@ -91,7 +90,6 @@ public class AuthService : IAuthService
         return (true, newUser.Id, null);
     }
 
-    // You can keep your fake token generation here for now
     private string GenerateFakeToken(string userId, string role)
     {
         return $"fake-{role.ToLower()}-token-{userId}";

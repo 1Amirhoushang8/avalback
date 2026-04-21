@@ -1,4 +1,4 @@
-﻿namespace AvalBackend.Models;
+﻿namespace AvalWebBack.Models;
 
 public class ChartData
 {

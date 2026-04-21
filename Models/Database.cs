@@ -1,6 +1,6 @@
-using AvalBackend.Models;
+using AvalWebBack.Models;
 
-namespace AvalBackend.Models;
+namespace AvalWebBack.Models;
 
 public class Database
 {

@@ -1,4 +1,4 @@
-using AvalBackend.Services;
+﻿using AvalWebBack.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +23,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseCors("AllowReact");
+app.UseDeveloperExceptionPage(); // ← Add this for detailed errors
 
 if (app.Environment.IsDevelopment())
 {
@@ -31,4 +32,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.MapGet("/test", () => "Backend is running!"); // ← Add this test endpoint
+
 app.Run();

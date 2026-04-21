@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;        
 using System.IO;                           
-using AvalBackend.Models;
+using AvalWebBack.Models;
 
-namespace AvalBackend.Services;
+namespace AvalWebBack.Services;
 
 public class JsonDataService
 {

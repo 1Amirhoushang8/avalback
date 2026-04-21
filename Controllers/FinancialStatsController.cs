@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using AvalBackend.Services;
+using AvalWebBack.Services;
 
-namespace AvalBackend.Controllers;
+namespace AvalWebBack.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
